@@ -1,0 +1,171 @@
+{extend name='common/_container'}
+{block name="content"}
+<div class="ibox float-e-margins">
+<input type="hidden" name='member_menu_id' id='member_menu_id' value="{$info.member_menu_id}" />
+	<div class="ibox-content">
+		<div class="form-horizontal" id="CodeInfoForm">
+			<div class="row">
+				<div class="col-sm-12">
+				<!-- form start -->
+					<div class="form-group">
+						<label class="col-sm-2 control-label">菜单名称：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="menu_name" value="{$info.menu_name}" name="menu_name" class="form-control" placeholder="请输入菜单名称">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">菜单URL：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="url" value="{$info.url}" name="url" class="form-control" placeholder="请输入菜单URL">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">重定向：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="redirect" value="{$info.redirect}" name="redirect" class="form-control" placeholder="请输入重定向">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">路由name：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="route_url" value="{$info.route_url}" name="route_url" class="form-control" placeholder="请输入路由name">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">路由组件路径：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="route_path" value="{$info.route_path}" name="route_path" class="form-control" placeholder="请输入路由组件路径">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">上级菜单：</label>
+						<div class="col-sm-9">
+							<select lay-ignore name="pid" class="form-control chosen" data-placeholder='请选择上级菜单'  id="pid">
+								<option value="">请选择</option>
+								{sql connect="mysql" query="SELECT member_menu_id,menu_name,pid FROM `cd_member_menu`"}
+									<option value="{$sql.member_menu_id}" {if condition="$info.pid eq $sql.member_menu_id"}selected{/if}>{$sql.menu_name}</option>
+								{/sql}
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">显示顺序：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="menu_order" value="{$info.menu_order}" name="menu_order" class="form-control" placeholder="请输入显示顺序">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">菜单图标：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="menu_ico" value="{$info.menu_ico}" name="menu_ico" class="form-control" placeholder="请输入菜单图标">
+						</div>
+					</div>
+					<div class="form-group layui-form">
+						<label class="col-sm-2 control-label">侧边显示：</label>
+						<div class="col-sm-9">
+							<?php if(!isset($info['broadside_status'])){ $info['broadside_status'] = '1'; }; ?>
+							<input name="broadside_status" value="1" type="radio" {if condition="$info.broadside_status eq '1'"}checked{/if} title="否">
+							<input name="broadside_status" value="2" type="radio" {if condition="$info.broadside_status eq '2'"}checked{/if} title="是">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">创建时间：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" value="{if condition="$info.create_time neq ''"}{$info.create_time|date='Y-m-d H:i:s'}{/if}" name="create_time"  placeholder="请输入创建时间" class="form-control" id="create_time">
+						</div>
+					</div>
+				<!-- form end -->
+				</div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="row btn-group-m-t">
+				<div class="col-sm-9 col-sm-offset-1">
+					<button type="button" class="btn btn-primary" onclick="CodeInfoDlg.update()" id="ensure">
+						<i class="fa fa-check"></i>&nbsp;确认提交
+					</button>
+					<button type="button" class="btn btn-danger" onclick="CodeInfoDlg.close()" id="cancel">
+						<i class="fa fa-eraser"></i>&nbsp;取消
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="__PUBLIC__/static/js/upload.js" charset="utf-8"></script>
+<script src="__PUBLIC__/static/js/plugins/layui/layui.js" charset="utf-8"></script>
+<link href='__PUBLIC__/static/js/plugins/chosen/chosen.min.css' rel='stylesheet'/>
+<script src='__PUBLIC__/static/js/plugins/chosen/chosen.jquery.js'></script>
+<script>
+layui.use(['form'],function(){});
+$(function(){$('.chosen').chosen({search_contains: true})})
+laydate.render({elem: '#create_time',type: 'datetime',trigger:'click'});
+var CodeInfoDlg = {
+	CodeInfoData: {},
+	validateFields: {
+		menu_name: {
+			validators: {
+				notEmpty: {
+					message: '菜单名称不能为空'
+	 			},
+	 		}
+	 	},
+		url: {
+			validators: {
+				notEmpty: {
+					message: '菜单URL不能为空'
+	 			},
+	 		}
+	 	},
+		route_url: {
+			validators: {
+				notEmpty: {
+					message: '路由name不能为空'
+	 			},
+	 		}
+	 	},
+		menu_order: {
+			validators: {
+				notEmpty: {
+					message: '显示顺序不能为空'
+	 			},
+	 		}
+	 	},
+		broadside_status: {
+			validators: {
+				notEmpty: {
+					message: '侧边显示不能为空'
+	 			},
+	 		}
+	 	},
+	 }
+}
+
+CodeInfoDlg.collectData = function () {
+	this.set('member_menu_id').set('menu_name').set('url').set('redirect').set('route_url').set('route_path').set('pid').set('menu_order').set('menu_ico').set('create_time');
+};
+
+CodeInfoDlg.update = function () {
+	 this.clearData();
+	 this.collectData();
+	 if (!this.validate()) {
+	 	return;
+	 }
+	 var broadside_status = $("input[name = 'broadside_status']:checked").val();
+	 var ajax = new $ax(Feng.ctxPath + "/MemberMenu/update", function (data) {
+	 	if ('00' === data.status) {
+	 		Feng.success(data.msg,1000);
+	 		window.parent.CodeGoods.table.refresh();
+	 		CodeInfoDlg.close();
+	 	} else {
+	 		Feng.error(data.msg + "！",1000);
+		 }
+	 })
+	 ajax.set('broadside_status',broadside_status);
+	 ajax.set(this.CodeInfoData);
+	 ajax.start();
+};
+
+
+</script>
+<script src="__PUBLIC__/static/js/base.js" charset="utf-8"></script>
+{/block}

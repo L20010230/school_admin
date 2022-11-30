@@ -1,0 +1,43 @@
+{extend name='common/_container'} 
+{block name="content"} 
+<div class="ibox float-e-margins"> 
+	<div class="ibox-content"> 
+		<table class="table table-bordered" style="word-break:break-all;"> 
+			<tbody> 
+				<tr> 
+					<td style="background-color:#F5F5F6; font-weight:bold; text-align:right" width="15%">姓名：</td> 
+					<td>{$info.student_name}</td>   
+				</tr> 
+				<tr> 
+					<td style="background-color:#F5F5F6; font-weight:bold; text-align:right" width="15%">班级名称：</td> 
+					<td>{$info.class_name}</td>   
+				</tr> 
+				<tr> 
+					<td style="background-color:#F5F5F6; font-weight:bold; text-align:right" width="15%">班级id：</td> 
+					<td>{$info.class_id}</td>   
+				</tr> 
+				<tr> 
+					<td style="background-color:#F5F5F6; font-weight:bold; text-align:right" width="15%">家长手机号：</td> 
+					<td>{$info.family_mobile}</td>   
+				</tr> 
+				<tr> 
+					<td style="background-color:#F5F5F6; font-weight:bold; text-align:right" width="15%">身份证号：</td> 
+					<td>{$info.id_card}</td>   
+				</tr> 
+				<tr> 
+					<td style="background-color:#F5F5F6; font-weight:bold; text-align:right" width="15%">密码：</td> 
+					<td>{$info.password}</td>   
+				</tr> 
+				<tr> 
+					<td style="background-color:#F5F5F6; font-weight:bold; text-align:right" width="15%">角色：</td> 
+					<td><?php echo getFieldVal($info["role"],"");?></td>   
+				</tr> 
+				<tr> 
+					<td style="background-color:#F5F5F6; font-weight:bold; text-align:right" width="15%">创建时间：</td> 
+					<td>{if $info.create_time}{$info.create_time|date='Y-m-d H:i:s'}{/if}</td>   
+				</tr> 
+			</tbody> 
+		</table> 
+	</div> 
+</div> 
+{/block} 

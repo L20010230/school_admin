@@ -1,0 +1,148 @@
+{extend name='common/_container'}
+{block name="content"}
+<div class="ibox float-e-margins">
+<input type="hidden" name='student_id' id='student_id' value="{$info.student_id}" />
+	<div class="ibox-content">
+		<div class="form-horizontal" id="CodeInfoForm">
+			<div class="row">
+				<div class="col-sm-12">
+				<!-- form start -->
+					<div class="form-group">
+						<label class="col-sm-2 control-label">姓名：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="student_name" value="{$info.student_name}" name="student_name" class="form-control" placeholder="请输入姓名">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">班级名称：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="class_name" value="{$info.class_name}" name="class_name" class="form-control" placeholder="请输入班级名称">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">班级id：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="class_id" value="{$info.class_id}" name="class_id" class="form-control" placeholder="请输入班级id">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">家长手机号：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="family_mobile" value="{$info.family_mobile}" name="family_mobile" class="form-control" placeholder="请输入家长手机号">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">身份证号：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" id="id_card" value="{$info.id_card}" name="id_card" class="form-control" placeholder="请输入身份证号">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">密码：</label>
+						<div class="col-sm-9">
+							<input type="password" id="password" value="{$info.password}" name="password" class="form-control" placeholder="请输入密码">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">角色：</label>
+						<div class="col-sm-9">
+							<select lay-ignore name="role" class="form-control" id="role">
+								<option value="">请选择</option>
+								<option value="" {if condition="$info.role eq ''"}selected{/if}></option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">创建时间：</label>
+						<div class="col-sm-9">
+							<input type="text" autocomplete="off" value="{if condition="$info.create_time neq ''"}{$info.create_time|date='Y-m-d H:i:s'}{/if}" name="create_time"  placeholder="请输入创建时间" class="form-control" id="create_time">
+						</div>
+					</div>
+				<!-- form end -->
+				</div>
+			</div>
+			<div class="hr-line-dashed"></div>
+			<div class="row btn-group-m-t">
+				<div class="col-sm-9 col-sm-offset-1">
+					<button type="button" class="btn btn-primary" onclick="CodeInfoDlg.update()" id="ensure">
+						<i class="fa fa-check"></i>&nbsp;确认提交
+					</button>
+					<button type="button" class="btn btn-danger" onclick="CodeInfoDlg.close()" id="cancel">
+						<i class="fa fa-eraser"></i>&nbsp;取消
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="__PUBLIC__/static/js/upload.js" charset="utf-8"></script>
+<script src="__PUBLIC__/static/js/plugins/layui/layui.js" charset="utf-8"></script>
+<script>
+layui.use(['form'],function(){});
+laydate.render({elem: '#create_time',type: 'datetime',trigger:'click'});
+var CodeInfoDlg = {
+	CodeInfoData: {},
+	validateFields: {
+		student_name: {
+			validators: {
+				notEmpty: {
+					message: '姓名不能为空'
+	 			},
+	 		}
+	 	},
+		family_mobile: {
+			validators: {
+				notEmpty: {
+					message: '家长手机号不能为空'
+	 			},
+				regexp: {
+					regexp: /^1[3456789]\d{9}$/,
+					message: ''
+	 			},
+	 		}
+	 	},
+		id_card: {
+			validators: {
+				regexp: {
+					regexp: /^[1-9]\d{5}(18|19|20|(3\d))\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
+					message: ''
+	 			},
+	 		}
+	 	},
+		password: {
+			validators: {
+				notEmpty: {
+					message: '密码不能为空'
+	 			},
+	 		}
+	 	},
+	 }
+}
+
+CodeInfoDlg.collectData = function () {
+	this.set('student_id').set('student_name').set('class_name').set('class_id').set('family_mobile').set('id_card').set('password').set('role').set('create_time');
+};
+
+CodeInfoDlg.update = function () {
+	 this.clearData();
+	 this.collectData();
+	 if (!this.validate()) {
+	 	return;
+	 }
+	 var ajax = new $ax(Feng.ctxPath + "/Student/update", function (data) {
+	 	if ('00' === data.status) {
+	 		Feng.success(data.msg,1000);
+	 		window.parent.CodeGoods.table.refresh();
+	 		CodeInfoDlg.close();
+	 	} else {
+	 		Feng.error(data.msg + "！",1000);
+		 }
+	 })
+	 ajax.set(this.CodeInfoData);
+	 ajax.start();
+};
+
+
+</script>
+<script src="__PUBLIC__/static/js/base.js" charset="utf-8"></script>
+{/block}
